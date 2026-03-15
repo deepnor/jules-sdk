@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 // Get retrieves a single activity by its resource name.
@@ -15,7 +16,7 @@ import (
 // The name should be in the format "sessions/{sessionId}/activities/{activityId}".
 func (s *ActivitiesService) Get(ctx context.Context, name string) (*Activity, error) {
 	activity := &Activity{}
-	path := "/" + name
+	path := "/" + url.PathEscape(name)
 	if err := s.client.Do(ctx, http.MethodGet, path, nil, activity); err != nil {
 		return nil, fmt.Errorf("activities: get: %w", err)
 	}
@@ -28,7 +29,7 @@ func (s *ActivitiesService) Get(ctx context.Context, name string) (*Activity, er
 // Use pageSize to control the number of results per page and pageToken to
 // retrieve subsequent pages.
 func (s *ActivitiesService) List(ctx context.Context, sessionName string, pageSize int, pageToken string) (*ListActivitiesResponse, error) {
-	path := "/" + sessionName + "/activities"
+	path := "/" + url.PathEscape(sessionName) + "/activities"
 	sep := "?"
 	if pageSize > 0 {
 		path += fmt.Sprintf("%spageSize=%d", sep, pageSize)
