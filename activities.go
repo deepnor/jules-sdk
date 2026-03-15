@@ -30,13 +30,10 @@ func (s *ActivitiesService) Get(ctx context.Context, name string) (*Activity, er
 // retrieve subsequent pages.
 func (s *ActivitiesService) List(ctx context.Context, sessionName string, pageSize int, pageToken string) (*ListActivitiesResponse, error) {
 	path := "/" + url.PathEscape(sessionName) + "/activities"
-	sep := "?"
-	if pageSize > 0 {
-		path += fmt.Sprintf("%spageSize=%d", sep, pageSize)
-		sep = "&"
-	}
-	if pageToken != "" {
-		path += fmt.Sprintf("%spageToken=%s", sep, pageToken)
+	q := url.Values{}
+	appendPagination(q, pageSize, pageToken)
+	if len(q) > 0 {
+		path += "?" + q.Encode()
 	}
 
 	resp := &ListActivitiesResponse{}

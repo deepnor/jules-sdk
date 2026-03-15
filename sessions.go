@@ -39,13 +39,10 @@ func (s *SessionsService) Get(ctx context.Context, name string) (*Session, error
 // retrieve subsequent pages.
 func (s *SessionsService) List(ctx context.Context, pageSize int, pageToken string) (*ListSessionsResponse, error) {
 	path := "/sessions"
-	sep := "?"
-	if pageSize > 0 {
-		path += fmt.Sprintf("%spageSize=%d", sep, pageSize)
-		sep = "&"
-	}
-	if pageToken != "" {
-		path += fmt.Sprintf("%spageToken=%s", sep, pageToken)
+	q := url.Values{}
+	appendPagination(q, pageSize, pageToken)
+	if len(q) > 0 {
+		path += "?" + q.Encode()
 	}
 
 	resp := &ListSessionsResponse{}

@@ -29,18 +29,13 @@ func (s *SourcesService) Get(ctx context.Context, name string) (*Source, error) 
 // results per page, and pageToken to retrieve subsequent pages.
 func (s *SourcesService) List(ctx context.Context, filter string, pageSize int, pageToken string) (*ListSourcesResponse, error) {
 	path := "/sources"
-	sep := "?"
+	q := url.Values{}
 	if filter != "" {
-		path += fmt.Sprintf("%sfilter=%s", sep, url.QueryEscape(filter))
-		sep = "&"
+		q.Set("filter", filter)
 	}
-	if pageSize > 0 {
-		path += fmt.Sprintf("%spageSize=%d", sep, pageSize)
-		sep = "&"
-	}
-	if pageToken != "" {
-		path += fmt.Sprintf("%spageToken=%s", sep, pageToken)
-		sep = "&"
+	appendPagination(q, pageSize, pageToken)
+	if len(q) > 0 {
+		path += "?" + q.Encode()
 	}
 
 	resp := &ListSourcesResponse{}
