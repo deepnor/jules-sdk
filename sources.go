@@ -16,7 +16,7 @@ import (
 // The name should be in the format "sources/{sourceId}".
 func (s *SourcesService) Get(ctx context.Context, name string) (*Source, error) {
 	source := &Source{}
-	path := "/" + name
+	path := "/" + url.PathEscape(name)
 	if err := s.client.Do(ctx, http.MethodGet, path, nil, source); err != nil {
 		return nil, fmt.Errorf("sources: get: %w", err)
 	}

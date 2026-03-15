@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 // Create creates a new session to start a coding task.
@@ -25,7 +26,7 @@ func (s *SessionsService) Create(ctx context.Context, req *CreateSessionRequest)
 // The name should be in the format "sessions/{sessionId}".
 func (s *SessionsService) Get(ctx context.Context, name string) (*Session, error) {
 	session := &Session{}
-	path := "/" + name
+	path := "/" + url.PathEscape(name)
 	if err := s.client.Do(ctx, http.MethodGet, path, nil, session); err != nil {
 		return nil, fmt.Errorf("sessions: get: %w", err)
 	}
@@ -60,7 +61,7 @@ func (s *SessionsService) List(ctx context.Context, pageSize int, pageToken stri
 // This is only needed when requirePlanApproval was set to true when
 // creating the session.
 func (s *SessionsService) ApprovePlan(ctx context.Context, sessionName string) error {
-	path := "/" + sessionName + ":approvePlan"
+	path := "/" + url.PathEscape(sessionName) + ":approvePlan"
 	if err := s.client.Do(ctx, http.MethodPost, path, &ApprovePlanRequest{}, nil); err != nil {
 		return fmt.Errorf("sessions: approve plan: %w", err)
 	}
@@ -71,7 +72,7 @@ func (s *SessionsService) ApprovePlan(ctx context.Context, sessionName string) e
 //
 // The sessionName should be in the format "sessions/{sessionId}".
 func (s *SessionsService) SendMessage(ctx context.Context, sessionName string, prompt string) error {
-	path := "/" + sessionName + ":sendMessage"
+	path := "/" + url.PathEscape(sessionName) + ":sendMessage"
 	req := &SendMessageRequest{Prompt: prompt}
 	if err := s.client.Do(ctx, http.MethodPost, path, req, nil); err != nil {
 		return fmt.Errorf("sessions: send message: %w", err)
