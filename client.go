@@ -8,6 +8,8 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -177,5 +179,15 @@ func parseErrorResponse(statusCode int, body []byte) error {
 		Code:           statusCode,
 		Message:        string(body),
 		Status:         http.StatusText(statusCode),
+	}
+}
+
+// appendPagination helper to centralize page size and page token formatting.
+func appendPagination(q url.Values, pageSize int, pageToken string) {
+	if pageSize > 0 {
+		q.Set("pageSize", strconv.Itoa(pageSize))
+	}
+	if pageToken != "" {
+		q.Set("pageToken", pageToken)
 	}
 }
